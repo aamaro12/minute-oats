@@ -1,0 +1,25 @@
+[project]
+name = "minute-oats"
+version = "0.1.0"
+description = "Record and transcribe meetings on your Mac, with optional summaries from a model you choose"
+requires-python = ">=3.11"
+dependencies = [
+    "parakeet-mlx>=0.5.3",
+    "livekit>=1.1.20",
+    "numpy>=1.26",
+    "huggingface-hub>=0.24",
+]
+
+[project.optional-dependencies]
+# In-process summaries with MLX models. Not needed if you point MINUTES_LLM_URL at a local server.
+mlx = ["mlx-lm>=0.32.0"]
+
+[project.scripts]
+minutes = "minutes.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["minutes"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

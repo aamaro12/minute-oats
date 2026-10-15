@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleIdentifier</key>
+    <string>io.github.aamaro12.minutes-rec</string>
+    <key>CFBundleName</key>
+    <string>minutes-rec</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Minutes records your microphone so it can transcribe meetings on this Mac.</string>
+    <key>NSAudioCaptureUsageDescription</key>
+    <string>Minutes records call audio so it can transcribe meetings on this Mac.</string>
+</dict>
+</plist>

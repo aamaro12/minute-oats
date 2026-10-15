@@ -78,7 +78,6 @@ minutes "Call with Sam"             # same, with a title
 minutes "Call with Sam" --summary   # also write a summary
 minutes --edit                      # open my-notes.md to jot notes during the call
 minutes --no-system                 # in-person meeting, microphone only
-minutes record "Summary of Q3"      # a title that starts with a command word needs `record`
 minutes import recording.m4a        # transcribe a file (m4a, mp3, wav, aiff)
 minutes list                        # all sessions
 minutes open                        # latest session in Finder

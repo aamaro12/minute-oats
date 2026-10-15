@@ -2,7 +2,6 @@
 
   minutes                         start recording (mic + call audio); Ctrl+C to stop, then the transcript
   minutes "title" [options]       same with a title; options: --summary --edit --no-system --no-mic
-  minutes record "title"          the same, for a title that starts with a command word
   minutes import <audio file>     transcribe an existing recording (m4a, mp3, wav, aiff)
   minutes transcribe [session]    redo the transcript of a session (--summary to add a summary)
   minutes summary [session]       write or redo the summary of a session

@@ -7,7 +7,6 @@ import sys
 import tempfile
 import wave
 from dataclasses import asdict, dataclass
-from difflib import SequenceMatcher
 from datetime import datetime
 from pathlib import Path
 
@@ -108,44 +107,6 @@ def transcribe_track(model, audio: np.ndarray, speaker: str, label: str) -> list
     return segments
 
 
-def _tokens(text: str) -> list[str]:
-    return [t for t in text.split() if re.search(r"\w", t)]
-
-
-def _norm(token: str) -> str:
-    return re.sub(r"\W", "", token.lower())
-
-
-def remove_echo(mine: list[Segment], theirs: list[Segment]) -> tuple[list[Segment], int]:
-    """A safety net for echo the canceller missed. If most of a mic line (60%+) repeats, in
-    order, what the call said at the same time, cut the repeated phrases and keep the rest if it
-    is 3+ words. Lines that only share a phrase with the call are left alone. A short line
-    ("good") counts as echo only if the call said those words at the same instant."""
-    kept, cleaned = [], 0
-    for seg in mine:
-        tokens = _tokens(seg.text)
-        words = [_norm(t) for t in tokens]
-        if len(words) < 3:
-            if any(abs(t.start - seg.start) < 0.5 and [_norm(w) for w in _tokens(t.text)][:len(words)] == words
-                   for t in theirs):
-                cleaned += 1
-            else:
-                kept.append(seg)
-            continue
-        heard = [_norm(t) for t in _tokens(" ".join(
-            t.text for t in theirs if t.start < seg.end + 0.5 and t.end > seg.start - 0.5))]
-        blocks = SequenceMatcher(None, words, heard, autojunk=False).get_matching_blocks()
-        echoed = {i for b in blocks if b.size >= 3 for i in range(b.a, b.a + b.size)}
-        if len(echoed) < 0.6 * len(words):
-            kept.append(seg)
-            continue
-        cleaned += 1
-        rest = [tok for i, tok in enumerate(tokens) if i not in echoed]
-        if len(rest) >= 3:
-            kept.append(Segment(seg.start, seg.end, seg.speaker, " ".join(rest)))
-    return kept, cleaned
-
-
 def to_turns(segments: list[Segment], gap: float = 2.0) -> list[Segment]:
     """Join consecutive segments from the same speaker into one turn."""
     turns: list[Segment] = []
@@ -201,10 +162,6 @@ def transcribe_session(session: Path) -> list[Segment]:
     mine = transcribe_track(model, audio["mic"], "Me" if both else "", "you") if "mic" in audio else []
     theirs = transcribe_track(model, audio["system"], "Them", "call") if "system" in audio else []
     imported = transcribe_track(model, audio["audio"], "", "audio") if "audio" in audio else []
-    if both:
-        mine, cleaned = remove_echo(mine, theirs)
-        if cleaned:
-            print(f"  removed call echo from {cleaned} mic lines", file=sys.stderr)
     turns = to_turns(mine + theirs + imported)
     apply_corrections(turns, load_corrections(session.parent / "vocabulary.txt"))
     (session / "transcript.json").write_text(json.dumps([asdict(t) for t in turns], indent=1, ensure_ascii=False))

@@ -34,7 +34,7 @@ Sure, I think the churn is mostly the pricing change in July. I'll send the coho
 | Step | What happens |
 |---|---|
 | Record | A small Swift tool (`recorder/`) uses ScreenCaptureKit to write two time-aligned 16 kHz tracks: `mic.wav` (you) and `system.wav` (the call). |
-| Clean | On laptop speakers your mic also hears the call. WebRTC's echo canceller, from the `livekit` package, removes it from the mic track, using the call track as its reference. If most of a mic line still repeats what the call said at that moment, the repeated words are cut. `mic.wav` itself is left untouched. |
+| Clean | On laptop speakers your mic also hears the call. WebRTC's echo canceller, from the `livekit` package, removes it from the mic track, using the call track as its reference. `mic.wav` itself is left untouched. |
 | Transcribe | [Parakeet TDT 0.6B v3](https://huggingface.co/mlx-community/parakeet-tdt-0.6b-v3) on MLX, in 15-second windows. It handles English, Italian and 23 other European languages, and works out which one is spoken. Each track is transcribed on its own, which is how lines get their Me and Them labels. |
 | Summarise | Only when you ask. The transcript, plus anything you typed in `my-notes.md` during the call, becomes a short summary with key points, decisions, action items and open questions. |
 
